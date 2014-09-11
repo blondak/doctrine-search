@@ -305,4 +305,24 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
         return $this->classNames = $classes;
     }
 
+    public function getAllClassNames()
+    {
+        if ($this->classNames !== NULL) {
+            return $this->classNames;
+        }
+
+        if ($this->parentDriver === NULL) {
+            return parent::getAllClassNames();
+        }
+
+        $classes = array();
+        foreach ($this->parentDriver->getAllClassNames() as $className) {
+            if (!$this->isTransient($className)) {
+                $classes[] = $className;
+            }
+        }
+
+        return $this->classNames = $classes;
+    }
+
 }
