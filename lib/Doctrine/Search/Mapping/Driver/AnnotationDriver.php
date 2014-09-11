@@ -23,6 +23,8 @@ use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnot
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Search\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Search\Mapping\DependentMappingDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -31,7 +33,7 @@ use Doctrine\Search\Mapping\MappingException;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class AnnotationDriver extends AbstractAnnotationDriver
+class AnnotationDriver extends AbstractAnnotationDriver implements DependentMappingDriver
 {
     /**
      * {@inheritDoc}
@@ -50,7 +52,28 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
     }
-    
+
+    protected $entityFieldAnnotationClasses = array(
+        'Doctrine\\Search\\Mapping\\Annotations\\Id',        //Only here for convenience
+        'Doctrine\\Search\\Mapping\\Annotations\\Parameter', //Only here for convenience
+        'Doctrine\\Search\\Mapping\\Annotations\\Field',
+        'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
+        'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
+    );
+
+    /**
+     * @var MappingDriver
+     */
+    private $parentDriver;
+
+    /**
+     * @param MappingDriver $driver
+     */
+    public function setParentDriver(MappingDriver $driver)
+    {
+        $this->parentDriver = $driver;
+    }
+
     /**
      * @param string $className
      * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
@@ -66,7 +89,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         $classAnnotations = $this->reader->getClassAnnotations($class);
-        
+
         $classMapping = array();
         $validMapping = false;
         foreach ($classAnnotations as $annotation) {
@@ -87,11 +110,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     break;
             }
         }
-        
+
         if (!$validMapping) {
             throw MappingException::classIsNotAValidDocument($className);
         }
-        
+
         $this->annotateClassMetadata($classMapping, $metadata);
 
         $properties = $class->getProperties();
@@ -116,7 +139,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
     }
-    
+
     private function annotateClassMetadata($classMapping, $metadata)
     {
         $className = $classMapping['class'];
@@ -151,7 +174,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 break;
         }
     }
-    
+
     private function fieldToArray($name, $fieldMapping)
     {
         $mapping = array();
@@ -160,17 +183,17 @@ class AnnotationDriver extends AbstractAnnotationDriver
         } else {
             $mapping['fieldName'] = $name;
         }
-        
+
         if (isset($fieldMapping['type'])) {
             $mapping['type'] = $fieldMapping['type'];
-            
+
             if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
                 foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
                     $subFieldMapping = (array) $subFieldMapping;
                     $mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
                 }
             }
-            
+
             if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
                 foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
                     $subFieldMapping = (array) $subFieldMapping;
@@ -202,10 +225,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($fieldMapping['nullValue'])) {
             $mapping['nullValue'] = $fieldMapping['nullValue'];
         }
-        
+
         return $mapping;
     }
-    
+
     private function rootToArray($rootMapping)
     {
         $mapping = array();
@@ -242,10 +265,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             unset($field['fieldName']);
             $mapping['mapping'] = $field;
         }
-        
+
         return $mapping;
     }
-    
+
     private function parameterToArray($name, $parameterMapping)
     {
         $mapping = array();
@@ -254,11 +277,32 @@ class AnnotationDriver extends AbstractAnnotationDriver
         } else {
             $mapping['parameterName'] = $name;
         }
-        
+
         if (isset($parameterMapping['type'])) {
             $mapping['type'] = $parameterMapping['type'];
         }
-        
+
         return $mapping;
     }
+
+    public function getAllClassNames()
+    {
+        if ($this->classNames !== NULL) {
+            return $this->classNames;
+        }
+
+        if ($this->parentDriver === NULL) {
+            return parent::getAllClassNames();
+        }
+
+        $classes = array();
+        foreach ($this->parentDriver->getAllClassNames() as $className) {
+            if (!$this->isTransient($className)) {
+                $classes[] = $className;
+            }
+        }
+
+        return $this->classNames = $classes;
+    }
+
 }
