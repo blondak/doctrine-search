@@ -95,8 +95,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $className;
 
     /**
-     * The ReflectionProperty instances of the mapped class.
-     *
      * @var array|ElasticField[]
      */
     public $fieldMappings = array();
@@ -125,7 +123,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var \ReflectionClass
+     * @var \ReflectionProperty[]|\ReflectionMethod[]
      */
     public $reflFields;
 
