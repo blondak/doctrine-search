@@ -265,6 +265,17 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
             unset($field['fieldName']);
             $mapping['mapping'] = $field;
         }
+        $documentsFieldAnnotations = array();
+        foreach ($reflMethods as $reflMethod) {
+            foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
+                foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
+                    if ($annotation instanceof $fieldAnnotationClass) {
+                        $metadata->addMethodMapping($reflMethod, $annotation);
+                        continue 2;
+                    }
+                }
+            }
+        }
 
         return $mapping;
     }
