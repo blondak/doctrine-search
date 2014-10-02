@@ -283,6 +283,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Adds a mapped parameter to the class.
      *
+<<<<<<< HEAD
      * @param array $mapping The parameter mapping.
      * @throws MappingException
      * @return void
