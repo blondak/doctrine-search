@@ -317,8 +317,41 @@ class Client implements SearchClientInterface
                 $properties[$propertyName]['index_name'] = $fieldMapping['indexName'];
             }
 
+<<<<<<< HEAD
             if (isset($fieldMapping['geohash'])) {
                 $properties[$propertyName]['geohash'] = $fieldMapping['geohash'];
+=======
+            if (isset($fieldMapping->indexAnalyzer)) {
+                $properties[$propertyName]['index_analyzer'] = $fieldMapping->indexAnalyzer;
+            }
+
+            if (isset($fieldMapping->searchAnalyzer)) {
+                $properties[$propertyName]['search_analyzer'] = $fieldMapping->searchAnalyzer;
+            }
+
+            if (isset($fieldMapping->payloads)) {
+                $properties[$propertyName]['payloads'] = $fieldMapping->payloads;
+            }
+
+            if (isset($fieldMapping->preserveSeparators)) {
+                $properties[$propertyName]['preserve_separators'] = $fieldMapping->preserveSeparators;
+            }
+
+            if (isset($fieldMapping->preservePositionIncrements)) {
+                $properties[$propertyName]['preserve_position_increments'] = $fieldMapping->preservePositionIncrements;
+            }
+
+            if (isset($fieldMapping->maxInputLength)) {
+                $properties[$propertyName]['max_input_length'] = $fieldMapping->maxInputLength;
+            }
+
+            if ($fieldMapping->type == 'attachment' && isset($fieldMapping->fields)) {
+                $callback = function ($field) {
+                    unset($field['type']);
+                    return $field;
+                };
+                $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
+>>>>>>> ElasticCompletionField
             }
 
             if (isset($fieldMapping['geohash_precision'])) {
