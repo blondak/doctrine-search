@@ -267,7 +267,7 @@ class Client implements SearchClientInterface
 
             if (isset($fieldMapping['type'])) {
                 $properties[$propertyName]['type'] = $fieldMapping['type'];
- 
+
                 if ($fieldMapping['type'] == 'attachment' && isset($fieldMapping['fields'])) {
                     $callback = function ($field) {
                         unset($field['type']);
@@ -279,7 +279,7 @@ class Client implements SearchClientInterface
                 if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
                     $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping['fields']);
                 }
-  
+
                 if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
                     $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping['properties']);
                 }
@@ -317,10 +317,10 @@ class Client implements SearchClientInterface
                 $properties[$propertyName]['index_name'] = $fieldMapping['indexName'];
             }
 
-<<<<<<< HEAD
             if (isset($fieldMapping['geohash'])) {
                 $properties[$propertyName]['geohash'] = $fieldMapping['geohash'];
-=======
+            }
+
             if (isset($fieldMapping->indexAnalyzer)) {
                 $properties[$propertyName]['index_analyzer'] = $fieldMapping->indexAnalyzer;
             }
@@ -351,7 +351,6 @@ class Client implements SearchClientInterface
                     return $field;
                 };
                 $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
->>>>>>> ElasticCompletionField
             }
 
             if (isset($fieldMapping['geohash_precision'])) {
