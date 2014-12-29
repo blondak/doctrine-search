@@ -94,12 +94,8 @@ class Post
 Documents can be serialized for indexing currently in the following ways. If required an event listener can
 be used with your ORM as shown in this example. If an event listener is not needed, entities can be persisted
 or removed directly using the search manager.
-```php
-<?php
-namespace Entities\Listener;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Entities\Behaviour\SearchableEntityInterface;
+The repository contains `OrmSearchableListener`, which can be used for this.
 
 class SearchableListener implements
 {
