@@ -95,6 +95,7 @@ class ClassMetadata implements ClassMetadataInterface
             'index',
             'parent',
             'className',
+            'riverImplementation',
         );
     }
 
