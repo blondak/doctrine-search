@@ -98,7 +98,7 @@ class NeonDriver implements MappingDriver
 
 	protected function loadIndexMapping(IndexMetadata $index, $indexMapping)
 	{
-		foreach (array('name', 'numberOfShards', 'numberOfReplicas', 'charFilter', 'filter', 'analyzer') as $key) {
+		foreach (array('name', 'numberOfShards', 'numberOfReplicas', 'charFilter', 'filter', 'analyzer', 'tokenizer') as $key) {
 			if (!array_key_exists($key, $indexMapping)) {
 				continue;
 			}
@@ -220,7 +220,7 @@ class NeonDriver implements MappingDriver
 
 			// $indexConfig = Config\Helpers::merge($meta, $this->indexDefaults);
 			unset($analysisSection);
-			foreach (array('charFilter', 'filter', 'analyzer') as $analysisType) {
+			foreach (array('charFilter', 'filter', 'analyzer', 'tokenizer') as $analysisType) {
 				$analysisSection = $meta[$analysisType];
 				unset($setup);
 				foreach ($analysisSection as $name => $setup) {

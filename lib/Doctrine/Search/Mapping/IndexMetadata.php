@@ -40,4 +40,9 @@ class IndexMetadata
 	 */
 	public $analyzer = array();
 
+	/**
+	 * @var array
+	 */
+	public $tokenizer = array();
+
 }

@@ -151,6 +151,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 				'char_filter' => $class->index->charFilter,
 				'analyzer' => $class->index->analyzer,
 				'filter' => $class->index->filter,
+				'tokenizer' => $class->index->tokenizer,
 			),
 		), TRUE);
 
