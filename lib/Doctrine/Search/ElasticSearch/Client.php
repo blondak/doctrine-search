@@ -103,6 +103,7 @@ class Client implements SearchClient
                 } else {
                     $elasticaDoc->setParam($name, $document[$value]);
                 }
+
                 unset($document[$value]);
             }
 

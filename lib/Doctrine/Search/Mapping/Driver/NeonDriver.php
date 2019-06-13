@@ -178,7 +178,6 @@ class NeonDriver implements MappingDriver
 			$meta['type'] = basename($file, '.type.neon');
 			$this->typesMapping[$meta['type']] = $meta;
 		}
-
 		return $this->typesMapping;
 	}
 
@@ -221,6 +220,9 @@ class NeonDriver implements MappingDriver
 			// $indexConfig = Config\Helpers::merge($meta, $this->indexDefaults);
 			unset($analysisSection);
 			foreach (array('charFilter', 'filter', 'analyzer', 'tokenizer') as $analysisType) {
+			    if (!array_key_exists($analysisType, $meta)){
+			        continue;
+			    }
 				$analysisSection = $meta[$analysisType];
 				unset($setup);
 				foreach ($analysisSection as $name => $setup) {

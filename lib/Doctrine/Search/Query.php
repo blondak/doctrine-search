@@ -363,7 +363,7 @@ class Query
 
         if ($resultSet instanceof Elastica\ResultSet) {
             $this->count = $resultSet->getTotalHits();
-            $this->facets = $resultSet->getFacets();
+            //$this->facets = $resultSet->getFacets();
             $results = $resultSet->getResults();
 
         } else {

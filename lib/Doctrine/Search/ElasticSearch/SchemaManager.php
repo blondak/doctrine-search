@@ -144,16 +144,16 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	public function createIndex(ClassMetadata $class)
 	{
 		$index = $this->elastica->getIndex($class->getIndexName());
-		$response = $index->create(array(
+		$response = $index->create(['settings' => [
 			'number_of_shards' => $class->index->numberOfShards,
 			'number_of_replicas' => $class->index->numberOfReplicas,
-			'analysis' => array(
+			'analysis' => [
 				'char_filter' => $class->index->charFilter,
 				'analyzer' => $class->index->analyzer,
 				'filter' => $class->index->filter,
 				'tokenizer' => $class->index->tokenizer,
-			),
-		), TRUE);
+			]],
+		], TRUE);
 
 		return $response;
 	}
@@ -191,14 +191,15 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 			$mapping->setParam($key, $value);
 		}
 
-		return $mapping->send();
+		return $mapping->send(['include_type_name' => true]);
 	}
 
 
 
 	public function dropType(ClassMetadata $class)
 	{
-		return $this->getType($class)->delete();
+	    $type = $this->getType($class);
+		return $type->delete();
 	}
 
 
