@@ -265,6 +265,10 @@ class UnitOfWork
         return $this->hydrateCollection($classes, $results);
     }
 
+    protected function getIndexName($index){
+        return preg_replace('/_[^d]+$/', '', $index);
+    }
+    
     /**
      * Construct an entity collection
      *
@@ -283,7 +287,9 @@ class UnitOfWork
             $documentsByType = array();
             foreach ($resultSet as $document) {
                 /** @var ClassMetadata $class */
-                $class = $map[$document->getIndex()][$document->getType()];
+                $class =  $map[$document->getIndex()][$document->getType()] ??
+                    $map[$this->getIndexName($document->getIndex())][$document->getType()]
+                ;
                 $documentsByType[$class->className][$document->getId()] = $document;
             }
 
@@ -298,7 +304,9 @@ class UnitOfWork
         $collection = new ArrayCollection();
         foreach ($resultSet as $document) {
             /** @var ClassMetadata $class */
-            $class = $map[$document->getIndex()][$document->getType()];
+            $class = $map[$document->getIndex()][$document->getType()] ??
+                $map[$this->getIndexName($document->getIndex())][$document->getType()]
+            ;
             $collection[] = $this->hydrateEntity($class, $document);
         }
 
