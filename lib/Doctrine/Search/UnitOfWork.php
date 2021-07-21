@@ -182,7 +182,7 @@ class UnitOfWork
             foreach ($_sortedDocuments as $entityName => $documents) {
                 $classMetadata = $this->sm->getClassMetadata($entityName);
                 $client->addDocuments($classMetadata, $indexName, $documents);
-                $this->updatedIndexes[] = $indexName;
+                $this->updatedIndexes[] = $classMetadata->index[$indexName]->name;
             }
         }
     }
