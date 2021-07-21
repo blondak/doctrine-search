@@ -270,8 +270,8 @@ class UnitOfWork
         return $this->hydrateCollection($classes, $results);
     }
 
-    protected function getIndexName($index){
-        return preg_replace('/_[^d]+$/', '', $index);
+    protected function getIndexName($_index){
+        return preg_replace('/_[\d]+$/', '', $_index);
     }
 
     /**
@@ -286,7 +286,7 @@ class UnitOfWork
         $map = array();
         foreach ($classes as $class) {
             foreach ($class->index as $indexName => $index){
-                $map[$indexName][$class->getTypeName()] = $class;
+                $map[$index->name][$class->getTypeName()] = $class;
             }
         }
 
@@ -295,7 +295,7 @@ class UnitOfWork
             foreach ($resultSet as $document) {
                 /** @var ClassMetadata $class */
                 $class =  $map[$document->getIndex()][$document->getType()] ??
-                    $map[$this->getIndexName($document->getIndex())][$document->getType()]
+                    $map[$this->getIndexName($document->getIndex(), $map)][$document->getType()]
                 ;
                 $documentsByType[$class->className][$document->getId()] = $document;
             }
@@ -312,7 +312,7 @@ class UnitOfWork
         foreach ($resultSet as $document) {
             /** @var ClassMetadata $class */
             $class = $map[$document->getIndex()][$document->getType()] ??
-                $map[$this->getIndexName($document->getIndex())][$document->getType()]
+                $map[$this->getIndexName($document->getIndex(), $map)][$document->getType()]
             ;
             $collection[] = $this->hydrateEntity($class, $document);
         }
