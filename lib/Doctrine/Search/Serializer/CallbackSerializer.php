@@ -33,7 +33,7 @@ class CallbackSerializer implements SerializerInterface
         $this->deserializerCallback = $deserializerCallback;
     }
 
-    public function serialize($object)
+    public function serialize($object, $indexOptions = NULL)
     {
         return $object->{$this->serializerCallback}();
     }

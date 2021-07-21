@@ -35,6 +35,7 @@ use Elastica\Query\MatchAll;
 use Elastica\Search;
 use Doctrine\Common\Collections\ArrayCollection;
 use Elastica\Query\Filtered;
+use Doctrine\Search\Mapping\IndexMetadata;
 
 
 /**
@@ -79,15 +80,15 @@ class Client implements SearchClient
      * @param ClassMetadata $class
      * @return \Elastica\Type
      */
-    protected function getType(ClassMetadata $class)
+    protected function getType(ClassMetadata $class, IndexMetadata $indexMedatada)
     {
-        return $this->getIndex($class->getIndexName())->getType($class->getTypeName());
+        return $this->getIndex($indexMedatada->name)->getType($class->getTypeName());
     }
 
     /**
      * {@inheritDoc}
      */
-    public function addDocuments(ClassMetadata $class, array $documents)
+    public function addDocuments(ClassMetadata $class, $indexName, array $documents)
     {
         $bulk = array();
         foreach ($documents as $id => $document) {
@@ -110,7 +111,7 @@ class Client implements SearchClient
             $bulk[] = $elasticaDoc->setData($document);
         }
 
-        $type = $this->getType($class);
+        $type = $this->getType($class, $class->index[$indexName]);
 
         if (count($bulk) > 1) {
             $type->addDocuments($bulk);

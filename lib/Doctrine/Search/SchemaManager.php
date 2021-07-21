@@ -6,6 +6,7 @@ use Doctrine\Search\Mapping\TypeMetadata;
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Mapping\IndexMetadata;
 use Nette;
 
 
@@ -21,7 +22,7 @@ interface SchemaManager
 	 */
 	public function dropMappings(array $classes);
 
-	/**
+	/**ClassMetadata $class, Index
 	 * @param array|ClassMetadata[] $classes
 	 * @param bool $withAliases
 	 * @return array
@@ -41,10 +42,10 @@ interface SchemaManager
 	public function hasIndex($index);
 
 	/**
-	 * @param ClassMetadata $class
+	 * @param $indexMetadata $class
 	 * @return boolean
 	 */
-	public function createIndex(ClassMetadata $class);
+	public function createIndex(ClassMetadata $class, IndexMetadata $indexMetadata);
 
 	/**
 	 * @param string $index
@@ -62,7 +63,7 @@ interface SchemaManager
 	 * @param ClassMetadata $class
 	 * @return boolean
 	 */
-	public function createType(ClassMetadata $class);
+	public function createType(ClassMetadata $class, IndexMetadata $indexMetadata);
 
 	/**
 	 * @param ClassMetadata $class

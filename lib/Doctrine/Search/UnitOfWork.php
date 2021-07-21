@@ -178,10 +178,12 @@ class UnitOfWork
         $sortedDocuments = $this->sortObjects($this->scheduledForPersist);
         $client = $this->sm->getClient();
 
-        foreach ($sortedDocuments as $entityName => $documents) {
-            $classMetadata = $this->sm->getClassMetadata($entityName);
-            $client->addDocuments($classMetadata, $documents);
-            $this->updatedIndexes[] = $classMetadata->getIndexName();
+        foreach ($sortedDocuments as $indexName => $_sortedDocuments){
+            foreach ($_sortedDocuments as $entityName => $documents) {
+                $classMetadata = $this->sm->getClassMetadata($entityName);
+                $client->addDocuments($classMetadata, $indexName, $documents);
+                $this->updatedIndexes[] = $indexName;
+            }
         }
     }
 
@@ -215,17 +217,20 @@ class UnitOfWork
         $serializer = $this->sm->getSerializer();
 
         foreach ($scheduledObjects as $type => $objects) {
+
             $metadata = $this->sm->getClassMetadata($type);
 
-            foreach ($objects as $object) {
-                $document = $serialize ? $serializer->serialize($object) : $object;
+            foreach($metadata->index as $indexName => $indexMetadata){
+                foreach ($objects as $object) {
+                    $document = $serialize ? $serializer->serialize($object, $indexMetadata->indexOptions) : $object;
 
-                if (!$metadata->getIdentifier()) {
-                    throw new DoctrineSearchException('Entity must have an id to be indexed');
+                    if (!$metadata->getIdentifier()) {
+                        throw new DoctrineSearchException('Entity must have an id to be indexed');
+                    }
+
+                    $id = implode('-', (array) $metadata->getIdentifierValues($object));
+                    $documents[$indexName][$type][$id] = $document;
                 }
-
-                $id = implode('-', (array) $metadata->getIdentifierValues($object));
-                $documents[$type][$id] = $document;
             }
         }
 
@@ -268,7 +273,7 @@ class UnitOfWork
     protected function getIndexName($index){
         return preg_replace('/_[^d]+$/', '', $index);
     }
-    
+
     /**
      * Construct an entity collection
      *
@@ -280,7 +285,9 @@ class UnitOfWork
     {
         $map = array();
         foreach ($classes as $class) {
-            $map[$class->getIndexName()][$class->getTypeName()] = $class;
+            foreach ($class->index as $indexName => $index){
+                $map[$indexName][$class->getTypeName()] = $class;
+            }
         }
 
         if ($om = $this->sm->getObjectManager()) { // preload entities by one query

@@ -45,4 +45,7 @@ class IndexMetadata
 	 */
 	public $tokenizer = array();
 
+	/** @var mixed */
+	public $indexOptions;
+
 }

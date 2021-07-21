@@ -51,7 +51,7 @@ class JMSSerializer implements SerializerInterface
 
 
 
-    public function serialize($object)
+    public function serialize($object, $indexOptions = NULL)
     {
         $context = $this->context ? clone $this->context : NULL;
 

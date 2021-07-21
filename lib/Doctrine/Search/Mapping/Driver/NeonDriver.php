@@ -63,8 +63,10 @@ class NeonDriver implements MappingDriver
 
 		$this->loadTypeMapping($metadata->type, $typeMapping);
 
-		$indexMapping = $this->getIndexMapping($typeMapping['index']);
-		$this->loadIndexMapping($metadata->index, $indexMapping);
+		foreach ($typeMapping['index'] as $index){
+    		$indexMapping = $this->getIndexMapping($index);
+    		$this->loadIndexMapping($metadata, $index, $indexMapping);
+		}
 
 		if (!empty($typeMapping['river'])) {
 			$metadata->riverImplementation = $typeMapping['river'];
@@ -96,14 +98,22 @@ class NeonDriver implements MappingDriver
 
 
 
-	protected function loadIndexMapping(IndexMetadata $index, $indexMapping)
+	/**
+	 *
+	 * @param IndexMetadata[] $index
+	 * @param mixed $indexMapping
+	 */
+	protected function loadIndexMapping(ClassMetadata $metadata, $index, $indexMapping)
 	{
-		foreach (array('name', 'numberOfShards', 'numberOfReplicas', 'charFilter', 'filter', 'analyzer', 'tokenizer') as $key) {
+	    if (!array_key_exists($index, $metadata->index)){
+	        $metadata->index[$index] = new IndexMetadata();
+	    }
+		foreach (array('name', 'numberOfShards', 'numberOfReplicas', 'charFilter', 'filter', 'analyzer', 'tokenizer', 'indexOptions') as $key) {
 			if (!array_key_exists($key, $indexMapping)) {
 				continue;
 			}
 
-			$index->{$key} = $indexMapping[$key];
+			$metadata->index[$index]->{$key} = $indexMapping[$key];
 		}
 	}
 
@@ -241,7 +251,6 @@ class NeonDriver implements MappingDriver
 
 			$this->indexesMapping[$meta['name']] = $meta;
 		}
-
 		return $this->indexesMapping;
 	}
 

@@ -9,6 +9,7 @@ use Doctrine\Search\SearchManager;
 use Elastica\Exception\ResponseException;
 use Elastica\Request;
 use Elastica\Type\Mapping as ElasticaTypeMapping;
+use Doctrine\Search\Mapping\IndexMetadata;
 
 
 
@@ -42,10 +43,10 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	 * @param ClassMetadata $class
 	 * @return \Elastica\Index
 	 */
-	protected function getIndex(ClassMetadata $class)
+	protected function getIndex(ClassMetadata $class, IndexMetadata $index)
 	{
 		return $this->elastica
-			->getIndex($class->getIndexName());
+			->getIndex($index->name);
 	}
 
 
@@ -54,9 +55,9 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	 * @param ClassMetadata $class
 	 * @return \Elastica\Type
 	 */
-	protected function getType(ClassMetadata $class)
+	protected function getType(ClassMetadata $class, IndexMetadata $index)
 	{
-		return $this->getIndex($class)
+		return $this->getIndex($class, $index)
 			->getType($class->getTypeName());
 	}
 
@@ -100,23 +101,24 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 		$aliases = [];
 		$date = date('YmdHis');
 		foreach ($classes as $class) {
-			if ($withAliases) {
-				$indexAlias = $class->getIndexName() . '_' . $date;
-				$aliases[$indexAlias] = $class->getIndexName();
+		    foreach ($class->getIndexes() as $indexName => $index){
+    		    if ($withAliases) {
+    				$indexAlias = $index->name . '_' . $date;
+    				$aliases[$indexAlias] = $index->name;
 
-				$fakeMetadata = clone $class;
-				$fakeMetadata->index->name = $indexAlias;
+    				$fakeMetadata = clone $class;
+    				$fakeMetadata->index[$indexName]->name = $indexAlias;
 
-				$class = $fakeMetadata;
-			}
+    				$class = $fakeMetadata;
+    			}
 
-			if (!$this->hasIndex($class->getIndexName())) {
-				$this->createIndex($class);
-			}
+    			if (!$this->hasIndex($index->name)) {
+    				$this->createIndex($class, $index);
+    			}
 
-			$this->createType($class);
+    			$this->createType($class, $index);
+		    }
 		}
-
 		return $aliases;
 	}
 
@@ -141,17 +143,17 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function createIndex(ClassMetadata $class)
+	public function createIndex(ClassMetadata $class, IndexMetadata $indexMetadata)
 	{
-		$index = $this->elastica->getIndex($class->getIndexName());
+	    $index = $this->elastica->getIndex($indexMetadata->name);
 		$response = $index->create(['settings' => [
-			'number_of_shards' => $class->index->numberOfShards,
-			'number_of_replicas' => $class->index->numberOfReplicas,
+		    'number_of_shards' => $indexMetadata->numberOfShards,
+		    'number_of_replicas' => $indexMetadata->numberOfReplicas,
 			'analysis' => [
-				'char_filter' => $class->index->charFilter,
-				'analyzer' => $class->index->analyzer,
-				'filter' => $class->index->filter,
-				'tokenizer' => $class->index->tokenizer,
+			    'char_filter' => $indexMetadata->charFilter,
+			    'analyzer' => $indexMetadata->analyzer,
+			    'filter' => $indexMetadata->filter,
+			    'tokenizer' => $indexMetadata->tokenizer,
 			]],
 		], TRUE);
 
@@ -174,9 +176,9 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function createType(ClassMetadata $class)
+	public function createType(ClassMetadata $class, IndexMetadata $indexMetadata)
 	{
-		$mapping = new ElasticaTypeMapping($this->getType($class), self::settingsToUnderscore($class->type->properties));
+		$mapping = new ElasticaTypeMapping($this->getType($class, $indexMetadata), self::settingsToUnderscore($class->type->properties));
 		$mapping->disableSource($class->type->source);
 
 		if ($class->type->boost !== NULL) {

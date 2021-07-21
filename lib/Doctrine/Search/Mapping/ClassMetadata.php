@@ -51,9 +51,9 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * @todo allow mapping to multiple indexes
-     * @var IndexMetadata
+     * @var IndexMetadata[]
      */
-    public $index;
+    public $index = [];
 
     /**
      * @var string
@@ -104,11 +104,25 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @return string
      */
-    public function getIndexName()
+    public function getIndexNames()
     {
-        return $this->index->name;
+        return array_map(function($a){return $a->name;}, $this->index);
     }
 
+    /**
+     * @deprecated
+     */
+    public function getIndexName(){
+        if (count($this->index) !== 1){
+            trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
+        }
+        return reset($this->index)->name;
+    }
+
+    public function getIndexes()
+    {
+        return $this->index;
+    }
 
 
     /**
@@ -353,7 +367,18 @@ class ClassMetadata implements ClassMetadataInterface
     public function __clone()
     {
         $this->type = clone $this->type;
-        $this->index = clone $this->index;
+        foreach ($this->index as &$index){
+            $index = clone $index;
+        }
     }
 
+    public function setIndex($index)
+    {
+        if (!is_array($index)){
+            $this->index = [$index];
+        } else {
+            $this->index = $index;
+        }
+        return $this;
+    }
 }

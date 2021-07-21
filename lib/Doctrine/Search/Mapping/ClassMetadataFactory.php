@@ -166,7 +166,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->driver->loadMetadataForClass($class->getName(), $class);
 
         if (($prefix = $this->config->getIndexPrefix()) !== NULL) {
-            $class->index->name = $prefix . $class->index->name;
+            foreach($class->index as $index){
+                $index->name = $prefix . $index->name;
+            }
         }
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
@@ -187,10 +189,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         if (empty($metadata->type)) {
             $metadata->type = $this->typeMetadataFactory->createTypeMetadata($className);
-        }
-
-        if (empty($metadata->index)) {
-            $metadata->index = new IndexMetadata();
         }
 
         return $metadata;

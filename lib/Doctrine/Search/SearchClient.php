@@ -73,7 +73,7 @@ interface SearchClient extends TypeMetadataFactory
      * @param ClassMetadata $class
      * @param array $documents Indexed by document id
      */
-    public function addDocuments(ClassMetadata $class, array $documents);
+    public function addDocuments(ClassMetadata $class, string $indexName, array $documents);
 
     /**
      * Remove documents of a given type from the specified index

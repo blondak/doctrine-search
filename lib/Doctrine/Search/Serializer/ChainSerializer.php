@@ -42,14 +42,15 @@ class ChainSerializer implements SerializerInterface
 
 	/**
 	 * @param object $object
+	 * @param mixed $indexOptions
 	 * @throws DefaultSerializerNotProvidedException
 	 * @return string
 	 */
-	public function serialize($object)
+	public function serialize($object, $indexOptions = NULL)
 	{
 		foreach ($this->serializers as $classType => $serializer) {
 			if ($object instanceof $classType) {
-				return $serializer->serialize($object);
+				return $serializer->serialize(...func_get_args());
 			}
 		}
 
@@ -57,7 +58,7 @@ class ChainSerializer implements SerializerInterface
 			throw new DefaultSerializerNotProvidedException;
 		}
 
-		return $this->defaultSerializer->serialize($object);
+		return $this->defaultSerializer->serialize(...func_get_args());
 	}
 
 

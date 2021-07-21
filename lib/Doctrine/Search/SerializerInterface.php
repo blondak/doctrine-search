@@ -21,6 +21,6 @@ namespace Doctrine\Search;
 
 interface SerializerInterface
 {
-    public function serialize($object);
+    public function serialize($object, $indexOptions = NULL);
     public function deserialize($entityName, $data);
 }
