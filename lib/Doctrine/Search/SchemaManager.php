@@ -57,7 +57,7 @@ interface SchemaManager
 	 * @param ClassMetadata $class
 	 * @return boolean
 	 */
-	public function hasType(ClassMetadata $class);
+	public function hasType(ClassMetadata $class, IndexMetadata $indexMetadata);
 
 	/**
 	 * @param ClassMetadata $class
@@ -69,7 +69,7 @@ interface SchemaManager
 	 * @param ClassMetadata $class
 	 * @return boolean
 	 */
-	public function dropType(ClassMetadata $class);
+	public function dropType(ClassMetadata $class, IndexMetadata $indexMetadata);
 
 	/**
 	 * @param string $alias

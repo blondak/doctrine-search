@@ -69,23 +69,28 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	public function dropMappings(array $classes)
 	{
 		foreach ($classes as $class) {
-			if (!$this->hasIndex($class->getIndexName())) {
-				continue;
-			}
+		    foreach ($class->getIndexes() as $indexName => $index){
 
-			if (!$this->hasType($class)) {
-				continue;
-			}
+		        if (!$this->hasIndex($indexName)) {
+    				continue;
+    			}
 
-			$this->dropType($class);
+    			if (!$this->hasType($class, $index)) {
+    				continue;
+    			}
+
+    			$this->dropType($class, $index);
+		    }
 		}
 
 		foreach ($classes as $class) {
-			if (!$this->hasIndex($class->getIndexName())) {
-				continue;
-			}
+		    foreach ($class->getIndexes() as $indexName => $index){
+		        if (!$this->hasIndex($indexName)) {
+				    continue;
+			    }
 
-			$this->dropIndex($class->getIndexName());
+			    $this->dropIndex($indexName);
+		    }
 		}
 	}
 
@@ -169,9 +174,9 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function hasType(ClassMetadata $class)
+	public function hasType(ClassMetadata $class, IndexMetadata $indexMetadata)
 	{
-		return $this->getType($class)->exists();
+		return $this->getType($class, $indexMetadata)->exists();
 	}
 
 
@@ -198,7 +203,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function dropType(ClassMetadata $class)
+	public function dropType(ClassMetadata $class, IndexMetadata $indexMetadata)
 	{
 	    $type = $this->getType($class);
 		return $type->delete();
