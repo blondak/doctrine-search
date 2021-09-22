@@ -39,7 +39,7 @@ interface SchemaManager
 	 * @param string $index
 	 * @return boolean
 	 */
-	public function hasIndex($index);
+	public function hasIndex(IndexMetadata $indexMetadata);
 
 	/**
 	 * @param $indexMetadata $class
@@ -51,7 +51,7 @@ interface SchemaManager
 	 * @param string $index
 	 * @return boolean
 	 */
-	public function dropIndex($index);
+	public function dropIndex(IndexMetadata $indexMetadata);
 
 	/**
 	 * @param ClassMetadata $class

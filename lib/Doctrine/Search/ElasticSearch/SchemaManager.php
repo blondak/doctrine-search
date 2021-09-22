@@ -70,8 +70,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	{
 		foreach ($classes as $class) {
 		    foreach ($class->getIndexes() as $indexName => $index){
-
-		        if (!$this->hasIndex($indexName)) {
+		        if (!$this->hasIndex($index)) {
     				continue;
     			}
 
@@ -85,11 +84,11 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 		foreach ($classes as $class) {
 		    foreach ($class->getIndexes() as $indexName => $index){
-		        if (!$this->hasIndex($indexName)) {
+		        if (!$this->hasIndex($index)) {
 				    continue;
 			    }
 
-			    $this->dropIndex($indexName);
+			    $this->dropIndex($index);
 		    }
 		}
 	}
@@ -117,7 +116,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
     				$class = $fakeMetadata;
     			}
 
-    			if (!$this->hasIndex($index->name)) {
+    			if (!$this->hasIndex($index)) {
     				$this->createIndex($class, $index);
     			}
 
@@ -141,9 +140,9 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function hasIndex($index)
+	public function hasIndex(IndexMetadata $indexMetadata)
 	{
-		return $this->elastica->getIndex($index)->exists();
+	    return $this->elastica->getIndex($indexMetadata->name)->exists();
 	}
 
 
@@ -167,9 +166,9 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 
 
-	public function dropIndex($index)
+	public function dropIndex(IndexMetadata $indexMetadata)
 	{
-		return $this->elastica->getIndex($index)->delete();
+	    return $this->elastica->getIndex($indexMetadata->name)->delete();
 	}
 
 
