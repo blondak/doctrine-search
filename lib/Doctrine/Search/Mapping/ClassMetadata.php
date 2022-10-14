@@ -19,11 +19,11 @@
 
 namespace Doctrine\Search\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Search\Mapping\Annotations\ElasticField;
 use Doctrine\Search\Mapping\Annotations\ElasticRoot;
 use Doctrine\Search\Mapping\MappingException;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Mapping\ReflectionService;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata

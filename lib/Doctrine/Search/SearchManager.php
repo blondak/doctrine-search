@@ -20,7 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 
 

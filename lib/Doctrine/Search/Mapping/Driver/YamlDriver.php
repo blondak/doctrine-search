@@ -19,10 +19,10 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Search\Mapping\MappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
+use Doctrine\Persistence\Mapping\MappingException as CommonMappingException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -43,7 +43,7 @@ class YamlDriver extends FileDriver
         'Doctrine\Search\Mapping\Annotations\Searchable' => 1,
         'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
     );
-    
+
     /**
      * {@inheritDoc}
      */
@@ -59,7 +59,7 @@ class YamlDriver extends FileDriver
     {
         /* @var $metadata \Doctrine\Search\Mapping\ClassMetadata */
         $hierarchy = array_merge(array($className), class_parents($className));
-        
+
         // Look for mappings in the class heirarchy and merge
         $element = array();
         foreach (array_reverse($hierarchy) as $subClassName) {
@@ -68,13 +68,13 @@ class YamlDriver extends FileDriver
             } catch (CommonMappingException $e) {
             }
         }
-        
+
         if (empty($element)) {
             throw MappingException::mappingFileNotFound($className);
         }
 
         $this->annotateClassMetadata($element, $metadata);
-        
+
         // Evaluate root mappings
         if (isset($element['root'])) {
             foreach ($element['root'] as $rootMapping) {
@@ -86,7 +86,7 @@ class YamlDriver extends FileDriver
         if (isset($element['id'])) {
             $metadata->identifier = $element['id'];
         }
-        
+
         // Evaluate field mappings
         if (isset($element['fields'])) {
             foreach ($element['fields'] as $name => $fieldMapping) {
@@ -94,7 +94,7 @@ class YamlDriver extends FileDriver
                 $metadata->mapField($mapping);
             }
         }
-        
+
         // Evaluate parameter mappings
         if (isset($element['parameters'])) {
             foreach ($element['parameters'] as $name => $parameterMapping) {
@@ -103,7 +103,7 @@ class YamlDriver extends FileDriver
             }
         }
     }
-    
+
     private function annotateClassMetadata($classMapping, $metadata)
     {
         $className = $classMapping['class'];
@@ -140,7 +140,7 @@ class YamlDriver extends FileDriver
                 throw MappingException::classIsNotAValidDocument($className);
         }
     }
-    
+
     private function fieldToArray($name, $fieldMapping)
     {
         $mapping = array();
@@ -149,17 +149,17 @@ class YamlDriver extends FileDriver
         } else {
             $mapping['fieldName'] = $name;
         }
-        
+
         if (isset($fieldMapping['type'])) {
             $mapping['type'] = $fieldMapping['type'];
-            
+
             if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
                 foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
                     $subFieldMapping = (array) $subFieldMapping;
                     $mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
                 }
             }
-            
+
             if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
                 foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
                     $subFieldMapping = (array) $subFieldMapping;
@@ -200,10 +200,10 @@ class YamlDriver extends FileDriver
         if (isset($fieldMapping['geohash_prefix'])) {
             $mapping['geohash_prefix'] = (bool) $fieldMapping['geohash_prefix'];
         }
-        
+
         return $mapping;
     }
-    
+
     private function rootToArray($rootMapping)
     {
         $mapping = array();
@@ -240,10 +240,10 @@ class YamlDriver extends FileDriver
             unset($field['fieldName']);
             $mapping['mapping'] = $field;
         }
-        
+
         return $mapping;
     }
-    
+
     private function parameterToArray($name, $parameterMapping)
     {
         $mapping = array();
@@ -252,14 +252,14 @@ class YamlDriver extends FileDriver
         } else {
             $mapping['parameterName'] = $name;
         }
-        
+
         if (isset($parameterMapping['type'])) {
             $mapping['type'] = $parameterMapping['type'];
         }
-        
+
         return $mapping;
     }
-    
+
     /**
      * {@inheritDoc}
      */

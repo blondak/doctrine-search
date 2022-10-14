@@ -19,15 +19,15 @@
 
 namespace Doctrine\Search\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Search\Mapping\Driver\DependentMappingDriver;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Configuration;
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\Events;
 use Doctrine\Search\Event\LoadClassMetadataEventArgs;
 

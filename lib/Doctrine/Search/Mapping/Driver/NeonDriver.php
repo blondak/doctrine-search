@@ -2,8 +2,8 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\InvalidArgumentException;
 use Doctrine\Search\Mapping\IndexMetadata;
 use Doctrine\Search\Mapping\TypeMetadata;
@@ -235,6 +235,8 @@ class NeonDriver implements MappingDriver
 			    }
 				$analysisSection = $meta[$analysisType];
 				unset($setup);
+				bdump(__METHOD__, '@TODO');
+				/*
 				foreach ($analysisSection as $name => $setup) {
 					if (!Config\Helpers::isInheriting($setup)) {
 						continue;
@@ -245,6 +247,7 @@ class NeonDriver implements MappingDriver
 					}
 					$analysisSection[$name] = Config\Helpers::merge($setup, $analysisSection[$parent]);
 				}
+				*/
 
 				$meta[$analysisType] = $analysisSection;
 			}
