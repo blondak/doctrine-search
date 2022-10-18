@@ -94,7 +94,7 @@ class SearchManager implements ObjectManager
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setTypeMetadataFactory($client);
         $this->metadataFactory->setConfiguration($this->configuration);
-        $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
+        //$this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
 
         $this->serializer = $this->configuration->getEntitySerializer();
         $this->objectManager = $this->configuration->getObjectManager();
