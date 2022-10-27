@@ -227,7 +227,7 @@ class NeonDriver implements MappingDriver
 			$meta = $adapter->load($file);
 			$meta['name'] = basename($file, '.index.neon');
 
-			// $indexConfig = Config\Helpers::merge($meta, $this->indexDefaults);
+			// $indexConfig = \Nette\Schema\Helpers::merge($meta, $this->indexDefaults);
 			unset($analysisSection);
 			foreach (array('charFilter', 'filter', 'analyzer', 'tokenizer') as $analysisType) {
 			    if (!array_key_exists($analysisType, $meta)){
@@ -235,19 +235,15 @@ class NeonDriver implements MappingDriver
 			    }
 				$analysisSection = $meta[$analysisType];
 				unset($setup);
-				bdump(__METHOD__, '@TODO');
-				/*
 				foreach ($analysisSection as $name => $setup) {
-					if (!Config\Helpers::isInheriting($setup)) {
-						continue;
-					}
-					$parent = Config\Helpers::takeParent($setup);
-					if (!isset($analysisSection[$parent])) {
-						throw new \Nette\Utils\AssertionException(sprintf('The %s.%s cannot inherit undefined %s.%s', $analysisType, $name, $analysisType, $parent));
-					}
-					$analysisSection[$name] = Config\Helpers::merge($setup, $analysisSection[$parent]);
+				    if (preg_match('/^(?<name>[^\s<]+)[\s]*<[\s]*(?<parent>.*)$/', $name, $matches)){
+				        if (!isset($analysisSection[$matches['parent']])) {
+				            throw new \Nette\Utils\AssertionException(sprintf('The %s.%s cannot inherit undefined %s.%s', $analysisType, $name, $analysisType, $matches['parent']));
+				        }
+				        $analysisSection[$matches['name']] = \Nette\Schema\Helpers::merge($setup, $analysisSection[$matches['parent']]);
+				        unset($analysisSection[$name]);
+				    }
 				}
-				*/
 
 				$meta[$analysisType] = $analysisSection;
 			}
