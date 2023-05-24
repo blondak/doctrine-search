@@ -40,7 +40,10 @@ abstract class TypeMetadata
 	 */
 	public $parameters = array();
 
-
+	/**
+	 * @var string
+	 */
+	public $className;
 
 	public function __construct($className)
 	{
