@@ -1,0 +1,15 @@
+{
+    "name": "blondak/doctrine-search-compatibility-tests",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4",
+        "doctrine/annotations": "^1.14",
+        "doctrine/common": "^3.0",
+        "doctrine/persistence": "^2.0 || ^3.0",
+        "jms/serializer": "^3.0"
+    },
+    "config": {
+        "allow-plugins": false
+    }
+}

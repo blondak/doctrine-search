@@ -19,7 +19,7 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 
 
 
@@ -85,7 +85,7 @@ class EntityRepositoryCollection implements ObjectRepository
      * @param int|null $offset
      * @return mixed The objects.
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
     {
         throw new NotImplementedException;
     }
